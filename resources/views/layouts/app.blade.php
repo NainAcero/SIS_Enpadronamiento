@@ -31,6 +31,7 @@
         <link href="{{ asset('assets/css/tables/table-basic.css') }}" rel="stylesheet" type="text/css" />
         <link href="{{ asset('assets/css/elements/infobox.css') }}" rel="stylesheet" type="text/css" />
 
+        <link href="{{ asset('plugins/select2/select2.min.css') }}" rel="stylesheet" type="text/css" />
         <link href="{{ asset('plugins/notification/snackbar/snackbar.min.css') }}" rel="stylesheet" type="text/css" />
         <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/forms/switches.css') }}">
         <link href="{{ asset('plugins/flatpickr/flatpickr.css') }}" rel="stylesheet" type="text/css">
@@ -91,6 +92,7 @@
         <script src="{{ asset('bootstrap/js/bootstrap.min.js') }}"></script>
         <script src="{{ asset('plugins/perfect-scrollbar/perfect-scrollbar.min.js') }}"></script>
         <script src="{{ asset('assets/js/app.js') }}"></script>
+        <script src="{{ asset('plugins/select2/select2.min.js') }}"></script>
 
         <script>
             $(document).ready(function() {
@@ -101,6 +103,8 @@
                     dateFormat: "d-m-Y",
                     'locale': 'es'
                 });
+
+                $('.mi-selector').select2();
             });
         </script>
 

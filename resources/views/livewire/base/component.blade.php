@@ -5,7 +5,7 @@
             <div class="widget-header">
                 <div class="row">
                     <div class="col-xl-12 text-center">
-                        <h5><b>Personas en el Sistema</b></h5>
+                        <h5><b>Bases en el Sistema</b></h5>
                 </div>
             </div>
         </div>
@@ -15,23 +15,21 @@
             <table class="table table-bordered table-hover table-striped table-checkable table-highlight-head mb-4">
                 <thead>
                     <tr>
-                        <th class="">DNI</th>
-                        <th class="">APELLIDO, NOMBRE</th>
+                        <th class="">BASE</th>
                         <th class="">DIRECCIÓN</th>
-                        <th class="">FECHA NACIMIENTO</th>
+                        <th class="">ESTADO</th>
                         <th class="text-center">ACCIONES</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($personas as $r)
+                    @foreach($bases as $r)
                     <tr>
-                        <td>{{$r->dni}}</td>
-                        <td>{{$r->apellido}} , {{$r->nombre}}</td>
+                        <td>{{$r->base}}</td>
                         <td>{{$r->direccion}}</td>
-                        @if($r->fecha_nacimiento != null)
-                            <td>{{\Carbon\Carbon::parse($r->fecha_nacimiento)->format('d-m-Y')}}</td>
+                        @if($r->estado == 1)
+                            <td class="text-left"><h7 class="text-info">Activo</h7><br></td>
                         @else
-                            <td>---</td>
+                            <td class="text-left"><h7 class="text-danger">Desactivado</h7><br></td>
                         @endif
                         <td class="text-center">
                             @include('common.actions')
@@ -40,12 +38,12 @@
                     @endforeach
                 </tbody>
             </table>
-            {{$personas->links()}}
+            {{$bases->links()}}
         </div>
     </div>
 
     @elseif($action == 2)
-        @include('livewire.persona.form')
+        @include('livewire.base.form')
     @endif
 </div>
 
@@ -63,7 +61,7 @@
             cancelButtonText: 'Cancelar',
             closeOnConfirm: false
         }, function() {
-            window.livewire.emit('deleteRow', id)
+            // window.livewire.emit('deleteRow', id)
             swal.close()
         })
    }

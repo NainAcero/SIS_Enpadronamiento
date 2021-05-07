@@ -24,6 +24,8 @@ Route::middleware(['auth:sanctum', 'verified'])->group( function() {
     })->name('dashboard');
 
     Route::view('personas', 'personas');
+    Route::view('cargos', 'cargos');
+    Route::view('bases', 'bases');
 });
 
 

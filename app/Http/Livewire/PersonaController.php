@@ -2,7 +2,10 @@
 
 namespace App\Http\Livewire;
 
-use App\Repositories\PersonaRepositoryInterface;
+use App\Models\Base;
+use App\Models\Cargo;
+use App\Models\Persona;
+use App\Models\PersonaBase;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -10,26 +13,30 @@ class PersonaController extends Component
 {
     use WithPagination;
 
-    public $dni, $nombre, $apellido, $direccion, $fecha_nacimiento;
-    private $repository, $pagination = 5;
-    public $selected_id, $search;
+    public $dni, $nombre, $apellido, $direccion, $fecha_nacimiento = null;
+    private $pagination = 10;
+    public $selected_id, $search, $selected_base, $selected_cargo, $bases, $cargos;
     public $action = 1;
 
-    public function mount(PersonaRepositoryInterface $repository) {
-        $this->repository = $repository;
+    public function mount() {
+        $this->bases = Base::where('estado',1)->get();
+        $this->cargos = Cargo::where('estado',1)->get();
+
+        $this->selected_cargo = (count($this->cargos) > 0) ? $this->cargos[0]->id : null;
     }
 
-    public function render(PersonaRepositoryInterface $repository) {
-        $this->repository = $repository;
+    public function render() {
 
         if(strlen($this->search) > 0){
-            $personas = $this->repository->search($this->search, $this->pagination);
+            $personas = Persona::where('nombre', 'like', '%'.$this->search.'%')
+                ->orWhere('dni', 'like', '%'.$this->search.'%')
+                ->paginate($this->pagination);
 
             return view('livewire.persona.component', [
                 "personas" => $personas,
             ]);
         }else{
-            $personas = $this->repository->paginate($this->pagination);
+            $personas = Persona::orderBy('id','desc')->paginate($this->pagination);
 
             return view('livewire.persona.component', [
                 "personas" => $personas,
@@ -51,15 +58,18 @@ class PersonaController extends Component
     	$this->nombre = '';
     	$this->apellido = '';
     	$this->direccion = '';
-    	$this->fecha_nacimiento = '';
+        $this->selected_base = null;
+    	$this->fecha_nacimiento = null;
     	$this->selected_id = null;
     	$this->action = 1;
     	$this->search = '';
+
+        $this->selected_cargo = (count($this->cargos) > 0) ? $this->cargos[0]->id : null;
     }
 
-    public function edit(int $id, PersonaRepositoryInterface $repository){
-        $this->repository = $repository;
-        $record = $this->repository->find($id);
+    public function edit(int $id){
+
+        $record = Persona::findOrFail($id);
 
         $this->nombre = $record->nombre;
         $this->apellido = $record->apellido;
@@ -70,8 +80,7 @@ class PersonaController extends Component
     	$this->action = 2;
     }
 
-    public function StoreOrUpdate(PersonaRepositoryInterface $repository){
-        $this->repository = $repository;
+    public function StoreOrUpdate(){
 
         $this->validate([
     		'dni' => ($this->selected_id <= 0)
@@ -82,21 +91,29 @@ class PersonaController extends Component
     	]);
 
         if($this->selected_id <= 0) {
-            $this->repository->create([
+            $persona = Persona::create([
                 "dni" => $this->dni,
                 "nombre" => $this->nombre,
                 "apellido" => $this->apellido,
                 "direccion" => $this->direccion,
                 "fecha_nacimiento" => $this->fecha_nacimiento,
             ]);
+            if($this->selected_cargo != null){
+                PersonaBase::create([
+                    "persona_id" => $persona->id,
+                    "base_id" => $this->selected_base,
+                    "cargo_id" => $this->selected_cargo,
+                ]);
+            }
             $this->emit('msgok', 'Usuario Creado');
         }else{
-            $this->repository->update([
+            Persona::where('id', $this->selected_id)
+            ->update([
                 "nombre" => $this->nombre,
                 "apellido" => $this->apellido,
                 "direccion" => $this->direccion,
                 "fecha_nacimiento" => $this->fecha_nacimiento,
-            ], $this->selected_id);
+            ]);
 
             $this->emit('msgok', 'Usuario Actualizado');
         }
@@ -104,23 +121,17 @@ class PersonaController extends Component
         $this->resetInput();
     }
 
-    public function infoUpdate($data) {
-        $this->nombre = $data['nombres'];
-        $this->apellido = $data['apellidoPaterno'].' '.$data['apellidoMaterno'];
-    }
-
-    public function destroy($id, PersonaRepositoryInterface $repository){
-        $this->repository = $repository;
-
-        if($this->repository->delete($id)){
+    public function destroy($id){
+        try {
+            Persona::destroy($id);
             $this->emit('msgok', "Usuario eliminado de sistema");
-        }else{
+        } catch (\Exception $exception) {
+            // dd($exception);
             $this->emit('msg-error', "No se pudo eliminar");
         }
     }
 
     protected $listeners = [
-        'updateDatos' => 'infoUpdate',
     	'deleteRow'     => 'destroy'
     ];
 }

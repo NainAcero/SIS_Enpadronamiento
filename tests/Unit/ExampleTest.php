@@ -2,17 +2,18 @@
 
 namespace Tests\Unit;
 
+use Illuminate\Foundation\Testing\WithoutMiddleware;
+use Mockery;
 use PHPUnit\Framework\TestCase;
 
 class ExampleTest extends TestCase
 {
-    /**
-     * A basic test example.
-     *
-     * @return void
-     */
+
     public function test_example()
     {
-        $this->assertTrue(true);
+        // $mock = Mockery::mock("App\Repositories\RepositoryInterface");
+        // $mock->shouldReceive('find')->with(1)->andReturn([]);
+        // $response = $mock->find(1);
+        // $this->assertEquals("awdawdwa", $response['nombre']);
     }
 }
