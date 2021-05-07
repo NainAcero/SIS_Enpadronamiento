@@ -79,7 +79,6 @@ class PersonaController extends Component
     		'nombre'  => 'required|max:100',
     		'apellido'   => 'required|max:100',
     		'direccion'   => 'required|max:100',
-    		'fecha_nacimiento'   => 'required',
     	]);
 
         if($this->selected_id <= 0) {

@@ -19,7 +19,7 @@ class CreatePersonasTable extends Migration
             $table->string('nombre', 120);
             $table->string('apellido', 120);
             $table->string('direccion', 120);
-            $table->date('fecha_nacimiento');
+            $table->date('fecha_nacimiento')->nullable();
 
             $table->timestamps();
         });
