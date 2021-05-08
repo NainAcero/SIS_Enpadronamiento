@@ -14,4 +14,16 @@ class PersonaBase extends Model
         'cargo_id',
         'base_id',
     ];
+
+    public function persona() {
+        return $this->belongsTo(Persona::class);
+    }
+
+    public function cargo() {
+        return $this->belongsTo(Cargo::class);
+    }
+
+    public function base() {
+        return $this->belongsTo(Base::class);
+    }
 }

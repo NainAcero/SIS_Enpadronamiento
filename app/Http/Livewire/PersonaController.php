@@ -28,15 +28,17 @@ class PersonaController extends Component
     public function render() {
 
         if(strlen($this->search) > 0){
-            $personas = Persona::where('nombre', 'like', '%'.$this->search.'%')
-                ->orWhere('dni', 'like', '%'.$this->search.'%')
+            $personas = PersonaBase::join('personas as p', 'p.id', 'persona_bases.persona_id')
+                ->where('p.nombre', 'like', '%'.$this->search.'%')
+                ->orWhere('p.dni', 'like', '%'.$this->search.'%')
+                ->select('persona_bases.*')
                 ->paginate($this->pagination);
 
             return view('livewire.persona.component', [
                 "personas" => $personas,
             ]);
         }else{
-            $personas = Persona::orderBy('id','desc')->paginate($this->pagination);
+            $personas = PersonaBase::orderBy('id','desc')->paginate($this->pagination);
 
             return view('livewire.persona.component', [
                 "personas" => $personas,
@@ -67,17 +69,18 @@ class PersonaController extends Component
         $this->selected_cargo = (count($this->cargos) > 0) ? $this->cargos[0]->id : null;
     }
 
-    public function edit(int $id){
+    public function edit(int $id) {
+        $record = PersonaBase::findOrFail($id);
 
-        $record = Persona::findOrFail($id);
-
-        $this->nombre = $record->nombre;
-        $this->apellido = $record->apellido;
-        $this->dni = $record->dni;
-        $this->direccion = $record->direccion;
-        $this->fecha_nacimiento = $record->fecha_nacimiento;
+        $this->nombre = $record->persona->nombre;
+        $this->apellido = $record->persona->apellido;
+        $this->dni = $record->persona->dni;
+        $this->direccion = $record->persona->direccion;
+        $this->fecha_nacimiento = $record->persona->fecha_nacimiento;
     	$this->selected_id = $id;
     	$this->action = 2;
+        $this->selected_base = $record->base_id;
+        $this->selected_cargo = $record->cargo_id;
     }
 
     public function StoreOrUpdate(){
@@ -101,13 +104,14 @@ class PersonaController extends Component
             if($this->selected_cargo != null){
                 PersonaBase::create([
                     "persona_id" => $persona->id,
-                    "base_id" => $this->selected_base,
+                    "base_id" => ($this->selected_base != "") ? $this->selected_base : null,
                     "cargo_id" => $this->selected_cargo,
                 ]);
             }
             $this->emit('msgok', 'Usuario Creado');
         }else{
-            Persona::where('id', $this->selected_id)
+            $personaBase = PersonaBase::find($this->selected_id);
+            Persona::where('id', $personaBase->persona_id)
             ->update([
                 "nombre" => $this->nombre,
                 "apellido" => $this->apellido,
@@ -115,15 +119,23 @@ class PersonaController extends Component
                 "fecha_nacimiento" => $this->fecha_nacimiento,
             ]);
 
+            if($this->selected_cargo != null){
+                $personaBase->update([
+                    "base_id" => ($this->selected_base != "") ? $this->selected_base : null,
+                    "cargo_id" => $this->selected_cargo,
+                ]);
+            }
+
             $this->emit('msgok', 'Usuario Actualizado');
         }
-
         $this->resetInput();
     }
 
     public function destroy($id){
         try {
-            Persona::destroy($id);
+            $delete = PersonaBase::where('id', $id)->first();
+            $delete->delete();
+            Persona::destroy($delete->id);
             $this->emit('msgok', "Usuario eliminado de sistema");
         } catch (\Exception $exception) {
             // dd($exception);

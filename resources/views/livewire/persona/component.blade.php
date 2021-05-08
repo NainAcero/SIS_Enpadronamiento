@@ -19,20 +19,24 @@
                         <th class="">APELLIDO, NOMBRE</th>
                         <th class="">DIRECCIÓN</th>
                         <th class="">FECHA NACIMIENTO</th>
+                        <th class="">CARGO</th>
+                        <th class="">BASE</th>
                         <th class="text-center">ACCIONES</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($personas as $r)
                     <tr>
-                        <td>{{$r->dni}}</td>
-                        <td>{{$r->apellido}} , {{$r->nombre}}</td>
-                        <td>{{$r->direccion}}</td>
-                        @if($r->fecha_nacimiento != null)
-                            <td>{{\Carbon\Carbon::parse($r->fecha_nacimiento)->format('d-m-Y')}}</td>
-                        @else
-                            <td>---</td>
-                        @endif
+                        <td>{{$r->persona->dni}}</td>
+                        <td>{{$r->persona->apellido}} , {{$r->persona->nombre}}</td>
+                        <td>{{$r->persona->direccion}}</td>
+                        <td>
+                            {{ ($r->persona->fecha_nacimiento != null)
+                                ? \Carbon\Carbon::parse($r->persona->fecha_nacimiento)->format('d-m-Y') : '' }}
+                        </td>
+                        <td>{{ $r->cargo->cargo ?? '' }}</td>
+                        <td>{{ $r->base->base ?? '' }}</td>
+
                         <td class="text-center">
                             @include('common.actions')
                         </td>

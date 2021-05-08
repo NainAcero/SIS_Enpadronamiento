@@ -28,18 +28,18 @@
                     <input wire:model.lazy="fecha_nacimiento" type="date" class="form-control" >
                     @error('fecha_nacimiento') <span class="text-danger">{{ $message }}</span> @enderror
                 </div>
-                <div class="form-group col-lg-6 col-md-6 col-sm-12" wire:ignore>
+                <div class="form-group col-lg-6 col-md-6 col-sm-12">
                     <label >Cargo </label>
-                    <select class="formn-control mi-selector" id="selected_cargo">
+                    <select class="form-control" wire:model="selected_cargo">
                         @foreach ($cargos as $cargo)
                             <option value='{{ $cargo->id }}'>{{ $cargo->cargo }}</option>
                         @endforeach
                     </select>
                 </div>
-                <div class="form-group col-lg-6 col-md-6 col-sm-12" wire:ignore>
+                <div class="form-group col-lg-6 col-md-6 col-sm-12">
                     <label >Base </label>
-                    <select class="formn-control mi-selector" id="selected_base">
-                        <option value="">Seleccionar Base</option>
+                    <select class="form-control" wire:model="selected_base">
+                        <option value="" >Seleccionar Base</option>
                         @foreach ($bases as $base)
                             <option value='{{ $base->id }}'>{{ $base->base }}</option>
                         @endforeach
@@ -63,18 +63,6 @@
 </div>
 
 <script type="text/javascript">
-
-    $('.mi-selector').select2();
-
-    $('#selected_base').on('change', function (e) {
-        var data = $('#selected_base').select2("val");
-        @this.set('selected_base', data);
-    });
-
-    $('#selected_cargo').on('change', function (e) {
-        var data = $('#selected_cargo').select2("val");
-        @this.set('selected_cargo', data);
-    });
 
     $('#dni').keyup(function(e) {
         if(e.keyCode==13){
