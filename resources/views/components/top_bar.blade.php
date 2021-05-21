@@ -64,6 +64,9 @@
                     <li>
                         <a href="{{url('bases')}}">BASES </a>
                     </li>
+                    <li>
+                        <a href="{{url('profesions')}}">PROFESIONES </a>
+                    </li>
                 </ul>
             </li>
         </ul>

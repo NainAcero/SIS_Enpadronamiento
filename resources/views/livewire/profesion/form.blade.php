@@ -2,19 +2,16 @@
     <div class="widget-one">
         <form>
             <div class="row">
-                <h5 class="col-sm-12 text-center">Gestionar Cargos</h5>
+                <h5 class="col-sm-12 text-center">Gestionar Profesiones</h5>
                 <div class="form-group col-lg-6 col-md-6 col-sm-12 mt-2">
-                    <label >Cargo *</label>
-                    <input wire:model.lazy="cargo" type="text"  class="form-control"  placeholder="cargo">
-                    @error('cargo') <span class="text-danger">{{ $message }}</span> @enderror
+                    <label >Nombre *</label>
+                    <input wire:model.lazy="name" type="text"  class="form-control"  placeholder="Nombre">
+                    @error('name') <span class="text-danger">{{ $message }}</span> @enderror
                 </div>
                 <div class="form-group col-lg-6 col-md-6 col-sm-12 mt-2">
-                    <label >Estado *</label>
-                    <select class="form-control" wire:model.lazy="estado" >
-                        <option value="1">Activo</option>
-                        <option value="0">Desactivado</option>
-                    </select>
-                    @error('estado') <span class="text-danger">{{ $message }}</span> @enderror
+                    <label >Descripcion *</label>
+                    <textarea wire:model.lazy="descripcion" class="form-control" rows="4"></textarea>
+                    @error('descripcion') <span class="text-danger">{{ $message }}</span> @enderror
                 </div>
             </div>
             <div class="row ">

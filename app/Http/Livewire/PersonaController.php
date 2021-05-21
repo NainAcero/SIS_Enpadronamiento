@@ -6,6 +6,7 @@ use App\Models\Base;
 use App\Models\Cargo;
 use App\Models\Persona;
 use App\Models\PersonaBase;
+use App\Models\Profesion;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -13,16 +14,19 @@ class PersonaController extends Component
 {
     use WithPagination;
 
-    public $dni, $nombre, $apellido, $direccion, $fecha_nacimiento = null;
-    private $pagination = 10;
-    public $selected_id, $search, $selected_base, $selected_cargo, $bases, $cargos;
+    public $dni, $nombre, $apellido, $direccion, $fecha_nacimiento = null, $selected_profesion, $telefono;
+    private $pagination = 10, $photo, $firma;
+    public $selected_id, $search, $selected_base, $selected_cargo, $bases, $cargos, $profesiones, $eventFirma, $eventPhoto;
     public $action = 1;
 
     public function mount() {
+        $this->eventPhoto = false;
+        $this->eventFirma = false;
         $this->bases = Base::where('estado',1)->get();
         $this->cargos = Cargo::where('estado',1)->get();
 
         $this->selected_cargo = (count($this->cargos) > 0) ? $this->cargos[0]->id : null;
+        $this->profesiones = Profesion::get();
     }
 
     public function render() {
@@ -59,12 +63,16 @@ class PersonaController extends Component
     	$this->dni = '';
     	$this->nombre = '';
     	$this->apellido = '';
+    	$this->telefono = '';
     	$this->direccion = '';
         $this->selected_base = null;
     	$this->fecha_nacimiento = null;
     	$this->selected_id = null;
+    	$this->selected_profesion = null;
     	$this->action = 1;
     	$this->search = '';
+        $this->eventPhoto = false;
+        $this->eventFirma = false;
 
         $this->selected_cargo = (count($this->cargos) > 0) ? $this->cargos[0]->id : null;
     }
@@ -73,6 +81,7 @@ class PersonaController extends Component
         $record = PersonaBase::findOrFail($id);
 
         $this->nombre = $record->persona->nombre;
+        $this->telefono = $record->persona->telefono;
         $this->apellido = $record->persona->apellido;
         $this->dni = $record->persona->dni;
         $this->direccion = $record->persona->direccion;
@@ -81,6 +90,7 @@ class PersonaController extends Component
     	$this->action = 2;
         $this->selected_base = $record->base_id;
         $this->selected_cargo = $record->cargo_id;
+        $this->selected_profesion = $record->persona->profesion_id;
     }
 
     public function StoreOrUpdate(){
@@ -91,6 +101,7 @@ class PersonaController extends Component
     		'nombre'  => 'required|max:100',
     		'apellido'   => 'required|max:100',
     		'direccion'   => 'required|max:100',
+    		'telefono'   => 'required|max:18',
     	]);
 
         if($this->selected_id <= 0) {
@@ -100,6 +111,8 @@ class PersonaController extends Component
                 "apellido" => $this->apellido,
                 "direccion" => $this->direccion,
                 "fecha_nacimiento" => $this->fecha_nacimiento,
+                "profesion_id" => ($this->selected_profesion == 0 ) ? null : $this->selected_profesion,
+                "telefono" => $this->telefono
             ]);
             if($this->selected_cargo != null){
                 PersonaBase::create([
@@ -117,6 +130,8 @@ class PersonaController extends Component
                 "apellido" => $this->apellido,
                 "direccion" => $this->direccion,
                 "fecha_nacimiento" => $this->fecha_nacimiento,
+                "profesion_id" => ($this->selected_profesion == 0 ) ? null : $this->selected_profesion,
+                "telefono" => $this->telefono
             ]);
 
             if($this->selected_cargo != null){
@@ -143,7 +158,19 @@ class PersonaController extends Component
         }
     }
 
+    public function fotoUpload($imageData) {
+        $this->photo = $imageData;
+        $this->eventPhoto = true;
+    }
+
+    public function firmaUpload($imageData) {
+        $this->firma = $imageData;
+        $this->eventFirma = true;
+    }
+
     protected $listeners = [
-    	'deleteRow'     => 'destroy'
+    	'deleteRow'  => 'destroy',
+    	'fotoUpload' => 'fotoUpload',
+    	'firmaUpload' => 'firmaUpload',
     ];
 }

@@ -54,6 +54,31 @@
 </div>
 
 <script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+
+        window.livewire.on('imagenChoosen', () => {
+
+            let inputField = document.getElementById('image')
+            let file = inputField.files[0]
+            let reader = new FileReader()
+            reader.onloadend = () => {
+                window.livewire.emit('fotoUpload', reader.result)
+            }
+            reader.readAsDataURL(file)
+        })
+
+        window.livewire.on('firmaChoosen', () => {
+
+            let inputField = document.getElementById('image')
+            let file = inputField.files[0]
+            let reader = new FileReader()
+            reader.onloadend = () => {
+                window.livewire.emit('firmaUpload', reader.result)
+            }
+            reader.readAsDataURL(file)
+        })
+    })
+
     function Confirm(id){
        let me = this
        swal({

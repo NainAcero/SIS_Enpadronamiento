@@ -26,6 +26,7 @@ Route::middleware(['auth:sanctum', 'verified'])->group( function() {
     Route::view('personas', 'personas');
     Route::view('cargos', 'cargos');
     Route::view('bases', 'bases');
+    Route::view('profesions', 'profesions');
 });
 
 
